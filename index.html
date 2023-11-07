@@ -5,13 +5,65 @@
   <title>Home</title>
 </head>
 <body>
-  <h1>Upload an Image</h1>
-  <div class="upload-container">
-    <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form">
-      <label for="file">Choose File</label>
-      <input type="file" name="file" id="file">
-      <input type="submit" value="Upload Image">
-    </form>
+<header>Friendly Accessibility</header>
+
+<h1>Upload an Image</h1>
+<div class="upload-container">
+  <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form">
+    <label for="file">Choose File</label>
+    <input type="file" name="file" id="file" accept="image/*">
+    <input type="submit" value="Upload Image">
+  </form>
+  <div id="drop-area" style="border: 2px dashed #ccc; padding: 20px; text-align: center;">
+    <p>Drag & Drop Image Here</p>
   </div>
+</div>
+
+<script>
+  const dropArea = document.getElementById("drop-area");
+
+  // Prevent default behavior to enable drop
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+  });
+
+  // Highlight the drop area when a draggable item is over it
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropArea.addEventListener(eventName, () => {
+      dropArea.style.background = '#f2f2f2';
+    });
+  });
+
+  // Unhighlight the drop area when a draggable item leaves it
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, () => {
+      dropArea.style.background = '#fff';
+    });
+  });
+
+  // Handle the dropped image
+  dropArea.addEventListener('drop', (e) => {
+    dropArea.style.background = '#fff';
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target.result;
+          dropArea.innerHTML = '';
+          dropArea.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert('Please drop an image file.');
+      }
+    }
+  });
+</script>
 </body>
 </html>
