@@ -33,6 +33,9 @@
     </div>
   
     <div id="result-container" class="result-container mt-3" aria-live="polite"></div>
+    <div id="result-container" class="result-container mt-3" aria-live="polite"></div>
+    
+    <button class="btn btn-success mt-3" onclick="speakOCRResult()">Listen</button>
   </main>
   
   <!-- Include Bootstrap JS and jQuery -->
@@ -142,7 +145,22 @@
         alert('Please drop an image file.');
       }
     }
-  });
+
+  }
+  );
+  function speakOCRResult() {
+      const resultContainer = document.getElementById('result-container');
+      const resultText = resultContainer.textContent.replace('OCR Result: ', '');
+      const speech = new SpeechSynthesisUtterance()
+      if (resultText) {
+       speech.lang = "en"
+        speech.text = resultText
+        window.speechSynthesis.speak(speech)
+      } else {
+        alert('No OCR result to speak. Please upload an image and generate text first.');
+      }
+    }
+  
 </script>
 </body>
 </html>
