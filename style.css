@@ -5,7 +5,7 @@ body {
   }
   
   header {
-    background-color: #007bff;
+    background-color: #021425;
     color: #fff;
     padding: 20px 0;
   }
@@ -36,7 +36,7 @@ body {
   }
   
   label {
-    background-color: #007bff;
+    background-color: #0c1520;
     color: #fff;
     border: none;
     padding: 10px 20px;
@@ -45,6 +45,6 @@ body {
   }
   
   label:hover {
-    background-color: #0056b3;
+    background-color: #212b35;
   }
   
