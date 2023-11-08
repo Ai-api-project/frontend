@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>Home</title>
+</head>
+<body>
+<header>Friendly Accessibility</header>
+
+<h1>Upload an Image</h1>
+<div class="upload-container">
+  <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form" onsubmit="uploadImage(event)">
+    <label for="file">Choose File</label>
+    <input type="file" name="file" id="file" accept="image/*" onchange="displaySelectedImage()">
+    <input type="submit" value="Upload Image">
+  </form>
+  <div id="drop-area" style="border: 2px dashed #ccc; padding: 20px; text-align: center;">
+    <p>Drag & Drop Image Here</p>
+  </div>
+  <div id="result-container"></div>
+</div>
+
+<script>
+  function displaySelectedImage() {
+    const fileInput = document.getElementById('file');
+    const selectedFile = fileInput.files[0];
+    const resultContainer = document.getElementById('result-container');
+    const dropArea = document.getElementById('drop-area');
+
+    // Clear OCR result when a new file is chosen
+    resultContainer.innerHTML = '';
+
+    if (selectedFile) {
+      if (selectedFile.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target.result;
+          dropArea.innerHTML = '';
+          dropArea.appendChild(img);
+        };
+        reader.readAsDataURL(selectedFile);
+      } else {
+        alert('Please choose an image file.');
+      }
+    }
+  }
+
+  async function uploadImage(event) {
+    event.preventDefault();
+
+    const fileInput = document.getElementById('file');
+    const file = fileInput.files[0];
+
+    if (file) {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      try {
+        const response = await fetch('http://localhost:8080/ocr', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.ok) {
+          const result = await response.text();
+          document.getElementById('result-container').innerHTML = 'OCR Result: ' + result;
+        } else {
+          console.error('Error:', response.statusText);
+          alert('Error occurred while uploading image. Check the console for details.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error occurred while uploading image. Check the console for details.');
+      }
+    } else {
+      alert('Please choose an image file.');
+    }
+  }
+
+  const dropArea = document.getElementById("drop-area");
+
+  // Prevent default behavior to enable drop
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+  });
+
+  // Highlight the drop area when a draggable item is over it
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropArea.addEventListener(eventName, () => {
+      dropArea.style.background = '#f2f2f2';
+    });
+  });
+
+  // Unhighlight the drop area when a draggable item leaves it
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, () => {
+      dropArea.style.background = '#fff';
+    });
+  });
+
+  // Handle the dropped image
+  dropArea.addEventListener('drop', (e) => {
+    dropArea.style.background = '#fff';
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target.result;
+          dropArea.innerHTML = '';
+          dropArea.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert('Please drop an image file.');
+      }
+    }
+  });
+</script>
+</body>
+</html>
