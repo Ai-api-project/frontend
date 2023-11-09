@@ -149,17 +149,22 @@
   }
   );
   function speakOCRResult() {
-      const resultContainer = document.getElementById('result-container');
-      const resultText = resultContainer.textContent.replace('OCR Result: ', '');
-      const speech = new SpeechSynthesisUtterance()
-      if (resultText) {
-       speech.lang = "en"
-        speech.text = resultText
-        window.speechSynthesis.speak(speech)
-      } else {
-        alert('No OCR result to speak. Please upload an image and generate text first.');
-      }
-    }
+  const resultContainer = document.getElementById('result-container');
+  const resultText = resultContainer.textContent.replace('OCR Result: ', '');
+  const speech = new SpeechSynthesisUtterance();
+
+  if (resultText) {
+    speech.lang = "en";
+    speech.text = resultText;
+
+    // Adjust the rate for slower speech (0.7 is slower, 1.0 is normal speed)
+    speech.rate = 0.7;
+
+    window.speechSynthesis.speak(speech);
+  } else {
+    alert('No OCR result to speak. Please upload an image and generate text first.');
+  }
+}
   
 </script>
 </body>
